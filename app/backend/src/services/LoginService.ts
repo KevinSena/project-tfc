@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { compare } from 'bcrypt';
+import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import ResError from '../utils/MyError';
 import Users from '../database/models/UserModel';
