@@ -24,11 +24,10 @@ describe('Login tests', () => {
     expect(chaiHttpResponse.body.user).to.have.all.keys(['id', 'username', 'role', 'email']);
   });
 
-  // it('Deve retornar erro se email incorreto',async () => {
-  //   chaiHttpResponse = await chai.request(app)
-  //   .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
-
-  //   expect(chaiHttpResponse).to.have.status(200);
-  //   expect(chaiHttpResponse.body).to.be.an('object');
-  // })
+  it('Deve retornar erro se email incorreto',async () => {
+    chaiHttpResponse = await chai.request(app)
+    .post('/login').send({email: 'eu@myself.com', password: 'secret_admin'});
+    expect(chaiHttpResponse).to.have.status(401);
+    expect(chaiHttpResponse.body.message).to.be.equal('Incorrect email or password');
+  })
 });

@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as cors from 'cors';
 import login from './controllers';
 import handleError from './middlewares/handleError';
 
@@ -20,6 +21,7 @@ class App {
       next();
     };
 
+    this.app.use(cors());
     this.app.use(accessControl);
     this.app.use(express.json());
     this.app.post('/login', (req, res, next) => login.getToken(req, res, next));
