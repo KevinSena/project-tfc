@@ -4,15 +4,23 @@ import { sign } from 'jsonwebtoken';
 import ResError from '../utils/MyError';
 import Users from '../database/models/UserModel';
 import config from '../utils/jwtConfig';
+import { ILoginService } from './ServiceInterfaces';
 
-export default class LoginService {
-  static async getToken(email: string, comingPassword: string): Promise<object> {
-    const user = await Users.findOne({ where: { email } });
-    if (!user) throw new ResError('Incorrect email or password', StatusCodes.UNAUTHORIZED);
+export default class LoginService implements ILoginService {
+  private unauthorizedMessage: string;
+  constructor(private model = Users) {
+    this.unauthorizedMessage = 'Incorrect email or password';
+  }
+
+  async getToken(email: string, comingPassword: string): Promise<object> {
+    if (!email || !comingPassword) {
+      throw new ResError(this.unauthorizedMessage, StatusCodes.UNAUTHORIZED);
+    }
+    const user = await this.model.findOne({ where: { email } });
+    if (!user) throw new ResError(this.unauthorizedMessage, StatusCodes.UNAUTHORIZED);
     const { id, username, role, password } = user;
     const isValid = await compare(comingPassword, user.password);
-    if (!isValid) throw new ResError('Incorrect email or password', StatusCodes.UNAUTHORIZED);
-    console.log();
+    if (!isValid) throw new ResError(this.unauthorizedMessage, StatusCodes.UNAUTHORIZED);
     const token = sign({ id, email, role, password }, config.secret, config.configs);
     return {
       user: { id, username, role, email },

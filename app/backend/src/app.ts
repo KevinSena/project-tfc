@@ -1,5 +1,6 @@
 import * as express from 'express';
-import LoginController from './controllers';
+import login from './controllers';
+import handleError from './middlewares/handleError';
 
 class App {
   public app: express.Express;
@@ -21,7 +22,9 @@ class App {
 
     this.app.use(accessControl);
     this.app.use(express.json());
-    this.app.post('/login', LoginController.get);
+    this.app.post('/login', (req, res, next) => login.getToken(req, res, next));
+
+    this.app.use(handleError);
   }
 
   public start(PORT: string | number):void {
