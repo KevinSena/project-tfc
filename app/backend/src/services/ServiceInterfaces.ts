@@ -11,3 +11,13 @@ export interface Iuser {
   email?: string;
   password?: string;
 }
+
+export interface ITeams {
+  id?: number;
+  teamName?: string;
+}
+
+export interface ITeamService {
+  getAll(): Promise<ITeams[]>
+  getById(id: string): Promise<ITeams>
+}

@@ -60,10 +60,4 @@ describe('Login tests', () => {
     expect(role.body).to.be.equal('admin');
   })
 
-  // it('Deve retornar erro se não tiver senha',async () => {
-  //   chaiHttpResponse = await chai.request(app)
-  //   .post('/login').send({email: 'admin@admin.com', password: ''});
-  //   expect(chaiHttpResponse).to.have.status(400);
-  //   expect(chaiHttpResponse.body.message).to.be.equal('All fields must be filled');
-  // })
 });
