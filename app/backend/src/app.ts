@@ -1,4 +1,5 @@
 import * as express from 'express';
+import LoginController from './controllers';
 
 class App {
   public app: express.Express;
@@ -19,10 +20,10 @@ class App {
     };
 
     this.app.use(accessControl);
-    // ...
+    this.app.use(express.json());
+    this.app.post('/login', LoginController.get);
   }
 
-  // ...
   public start(PORT: string | number):void {
     this.app.listen(PORT, () => console.log(`Running on port ${PORT}`));
   }
