@@ -23,6 +23,8 @@ services:
     platform: linux/x86_64
     restart: 'always'
     command: npm run dev
+    volumes:
+      - './backend/src:/app/src'
     depends_on:
       db:
         condition: service_healthy

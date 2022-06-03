@@ -14,4 +14,14 @@ export default class LoginController implements ILoginController {
       next(error);
     }
   }
+
+  validateToken(req: Request, res: Response, next: NextFunction): void {
+    try {
+      const { authorization } = req.headers;
+      const role = this.service.validateToken(authorization as string);
+      res.status(200).json(role);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

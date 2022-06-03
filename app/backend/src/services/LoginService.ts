@@ -1,17 +1,27 @@
 import { StatusCodes } from 'http-status-codes';
 import { compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import ResError from '../utils/MyError';
 import Users from '../database/models/UserModel';
 import config from '../utils/jwtConfig';
-import { ILoginService } from './ServiceInterfaces';
+import { ILoginService, Iuser } from './ServiceInterfaces';
 
 export default class LoginService implements ILoginService {
   private unauthorizedMessage: string;
   private blankSpaceMessage: string;
+  private secret: string;
   constructor(private model = Users) {
     this.unauthorizedMessage = 'Incorrect email or password';
     this.blankSpaceMessage = 'All fields must be filled';
+    this.secret = config.secret;
+  }
+
+  validateToken(token: string): string | undefined {
+    const data = verify(token, this.secret, (err, decoded) => {
+      if (err) throw new ResError(err.message, 400);
+      return decoded;
+    }) as Iuser | undefined;
+    return data?.role;
   }
 
   async validatePassword(comingPassword: string, password: string): Promise<void> {
@@ -26,8 +36,8 @@ export default class LoginService implements ILoginService {
     const user = await this.model.findOne({ where: { email } });
     if (!user) throw new ResError(this.unauthorizedMessage, StatusCodes.UNAUTHORIZED);
     const { id, username, role, password } = user;
-    this.validatePassword(comingPassword, password);
-    const token = sign({ id, email, role, password }, config.secret, config.configs);
+    await this.validatePassword(comingPassword, password);
+    const token = sign({ id, email, role, password }, this.secret, config.configs);
     return {
       user: { id, username, role, email },
       token,

@@ -24,6 +24,7 @@ class App {
     this.app.use(cors());
     this.app.use(accessControl);
     this.app.use(express.json());
+    this.app.get('/login/validate', (req, res, next) => login.validateToken(req, res, next));
     this.app.post('/login', (req, res, next) => login.getToken(req, res, next));
 
     this.app.use(handleError);
