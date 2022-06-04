@@ -2,8 +2,11 @@ import TeamService from '../services/TeamService';
 import LoginService from '../services/LoginService';
 import LoginController from './LoginController';
 import TeamController from './TeamController';
+import MatchController from './MatchController';
+import MatchService from '../services/MatchService';
 
 const login = new LoginController(new LoginService());
 const teams = new TeamController(new TeamService());
+const matches = new MatchController(new MatchService());
 
-export { login, teams };
+export { login, teams, matches };

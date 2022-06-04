@@ -21,3 +21,20 @@ export interface ITeamService {
   getAll(): Promise<ITeams[]>
   getById(id: string): Promise<ITeams>
 }
+
+export interface IMatches {
+  id?: number;
+  homeTeam?: number;
+  homeTeamGoals?: number;
+  awayTeam?: number;
+  awayTeamGoals?: number;
+  inProgress?: boolean;
+  teamHome?: string;
+  teamAway?: string;
+}
+
+export interface IMatchService {
+  getAll(): Promise<IMatches[]>
+  getInProgress(): Promise<IMatches[]>
+  getFinished(): Promise<IMatches[]>
+}

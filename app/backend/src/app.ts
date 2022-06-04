@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as cors from 'cors';
-import { login, teams } from './controllers';
+import { login, matches, teams } from './controllers';
 import handleError from './middlewares/handleError';
 
 class App {
@@ -30,6 +30,8 @@ class App {
 
     this.app.get('/teams', (req, res, next) => teams.getAll(req, res, next));
     this.app.get('/teams/:id', (req, res, next) => teams.getById(req, res, next));
+
+    this.app.get('/matches', (req, res, next) => matches.getAll(req, res, next));
 
     this.app.use(handleError);
   }

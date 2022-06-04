@@ -9,3 +9,7 @@ export interface ITeamController{
   getAll(req: Request, res: Response, next: NextFunction): Promise<void>
   getById(req: Request, res: Response, next: NextFunction): Promise<void>
 }
+
+export interface IMatchController{
+  getAll(req: Request, res: Response, next: NextFunction): Promise<void>
+}
