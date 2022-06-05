@@ -1,6 +1,6 @@
 import Teams from '../database/models/TeamModel';
 import Matches from '../database/models/MatchModel';
-import { IMatches, IMatchService } from './ServiceInterfaces';
+import { IMatchCreate, IMatches, IMatchService } from './ServiceInterfaces';
 
 export default class MatchService implements IMatchService {
   constructor(private model = Matches) { }
@@ -28,6 +28,12 @@ export default class MatchService implements IMatchService {
       { model: Teams, foreignKey: 'awayTeam', as: 'teamAway', attributes: { exclude: ['id'] } },
     ],
     where: { inProgress: false } });
+    return data;
+  }
+
+  async create(payload: IMatchCreate)
+    : Promise<IMatches> {
+    const data = await this.model.create(payload);
     return data;
   }
 }

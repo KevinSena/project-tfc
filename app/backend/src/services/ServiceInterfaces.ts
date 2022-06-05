@@ -33,8 +33,17 @@ export interface IMatches {
   teamAway?: string;
 }
 
+export interface IMatchCreate {
+  homeTeam?: number;
+  homeTeamGoals?: number;
+  awayTeam?: number;
+  awayTeamGoals?: number;
+  inProgress?: boolean;
+}
+
 export interface IMatchService {
   getAll(): Promise<IMatches[]>
   getInProgress(): Promise<IMatches[]>
   getFinished(): Promise<IMatches[]>
+  create(payload: IMatchCreate): Promise<IMatches>
 }

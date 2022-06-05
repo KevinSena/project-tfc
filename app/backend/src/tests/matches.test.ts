@@ -43,4 +43,18 @@ describe('Matches tests', () => {
     expect(chaiHttpResponse.body[0]).to.have.all.keys(['id', 'homeTeam', 'homeTeamGoals', 'awayTeam', 'awayTeamGoals', 'inProgress', 'teamHome', 'teamAway']);
     expect(isEvery).to.be.equal(true)
   })
+
+  it('Cria partida em andamento', async () => {
+    chaiHttpResponse = await chai.request(app).post('/matches').send({
+      "homeTeam": 16,
+      "awayTeam": 8,
+      "homeTeamGoals": 2,
+      "awayTeamGoals": 2,
+      "inProgress": true
+    });
+
+    expect(chaiHttpResponse).to.have.status(201);
+    expect(chaiHttpResponse.body).to.be.an('object');
+    expect(chaiHttpResponse.body).to.have.all.keys(['id', 'homeTeam', 'homeTeamGoals', 'awayTeam', 'awayTeamGoals', 'inProgress']);
+  })
 })

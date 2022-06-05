@@ -32,6 +32,7 @@ class App {
     this.app.get('/teams/:id', (req, res, next) => teams.getById(req, res, next));
 
     this.app.get('/matches', (req, res, next) => matches.getAll(req, res, next));
+    this.app.post('/matches', (req, res, next) => login.isAdmin(req, res, next), (req, res, next) => matches.create(req, res, next));
 
     this.app.use(handleError);
   }

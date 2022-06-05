@@ -21,4 +21,16 @@ export default class MatchController implements IMatchController {
       next(error);
     }
   }
+
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      console.log(req.query.role);
+      const { homeTeam, homeTeamGoals, awayTeam, awayTeamGoals, inProgress } = req.body;
+      const data = await this.service
+        .create({ homeTeam, homeTeamGoals, awayTeam, awayTeamGoals, inProgress });
+      res.status(201).json(data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
