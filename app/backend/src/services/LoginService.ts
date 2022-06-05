@@ -1,26 +1,22 @@
 import { StatusCodes } from 'http-status-codes';
 import { compare } from 'bcryptjs';
-import { sign, verify } from 'jsonwebtoken';
 import ResError from '../utils/MyError';
 import Users from '../database/models/UserModel';
-import config from '../utils/jwtConfig';
-import { ILoginService, Iuser } from './ServiceInterfaces';
+import JwtConfig from '../utils/jwtConfig';
+import { ILoginService } from './ServiceInterfaces';
 
 export default class LoginService implements ILoginService {
   private unauthorizedMessage: string;
   private blankSpaceMessage: string;
-  private secret: string;
+  private jwt: JwtConfig;
   constructor(private model = Users) {
     this.unauthorizedMessage = 'Incorrect email or password';
     this.blankSpaceMessage = 'All fields must be filled';
-    this.secret = config.secret;
+    this.jwt = new JwtConfig();
   }
 
   validateToken(token: string): string | undefined {
-    const data = verify(token, this.secret, (err, decoded) => {
-      if (err) throw new ResError(err.message, 400);
-      return decoded;
-    }) as Iuser | undefined;
+    const data = this.jwt.decrypt(token);
     return data?.role;
   }
 
@@ -37,7 +33,7 @@ export default class LoginService implements ILoginService {
     if (!user) throw new ResError(this.unauthorizedMessage, StatusCodes.UNAUTHORIZED);
     const { id, username, role, password } = user;
     await this.validatePassword(comingPassword, password);
-    const token = sign({ id, email, role, password }, this.secret, config.configs);
+    const token = this.jwt.crypt({ id, email, role, password });
     return {
       user: { id, username, role, email },
       token,
