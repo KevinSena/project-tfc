@@ -1,7 +1,9 @@
 import * as express from 'express';
 import * as cors from 'cors';
-import { login, matches, teams } from './controllers';
 import handleError from './middlewares/handleError';
+import LoginRoute from './routes/LoginRoute';
+import TeamsRoute from './routes/TeamsRoute';
+import MatchesRoute from './routes/MatchesRoute';
 
 class App {
   public app: express.Express;
@@ -25,14 +27,11 @@ class App {
     this.app.use(accessControl);
     this.app.use(express.json());
 
-    this.app.get('/login/validate', (req, res, next) => login.validateToken(req, res, next));
-    this.app.post('/login', (req, res, next) => login.getToken(req, res, next));
+    this.app.use('/login', LoginRoute);
 
-    this.app.get('/teams', (req, res, next) => teams.getAll(req, res, next));
-    this.app.get('/teams/:id', (req, res, next) => teams.getById(req, res, next));
+    this.app.use('/teams', TeamsRoute);
 
-    this.app.get('/matches', (req, res, next) => matches.getAll(req, res, next));
-    this.app.post('/matches', (req, res, next) => login.isAdmin(req, res, next), (req, res, next) => matches.create(req, res, next));
+    this.app.use('/matches', MatchesRoute);
 
     this.app.use(handleError);
   }
