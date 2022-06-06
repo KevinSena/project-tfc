@@ -11,10 +11,8 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Matches tests', async () => {
+describe('Matches tests', () => {
   let chaiHttpResponse: Response;
-  const token = await chai.request(app)
-    .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
 
   it('Devolve todas as partidas, sem filtros', async () => {
     chaiHttpResponse = await chai.request(app).get('/matches');
@@ -47,13 +45,15 @@ describe('Matches tests', async () => {
   })
 
   it('Cria partida em andamento', async () => {
+    const token = await chai.request(app)
+    .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
     chaiHttpResponse = await chai.request(app).post('/matches').send({
       "homeTeam": 16,
       "awayTeam": 8,
       "homeTeamGoals": 2,
       "awayTeamGoals": 2,
       "inProgress": true
-    });
+    }).set({ "authorization": token.body.token });
 
     expect(chaiHttpResponse).to.have.status(201);
     expect(chaiHttpResponse.body).to.be.an('object');
@@ -61,6 +61,8 @@ describe('Matches tests', async () => {
   })
 
   it('Finaliza partida em andamento', async () => {
+    const token = await chai.request(app)
+    .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
     const inProgress = await chai.request(app).post('/matches').send({
       "homeTeam": 16,
       "awayTeam": 8,
@@ -73,5 +75,20 @@ describe('Matches tests', async () => {
 
     expect(chaiHttpResponse).to.have.status(200);
     expect(chaiHttpResponse.body.message).to.be.eqls('Finished')
+  })
+
+  it('Não é possível dois times iguais na mesma partida', async () => {
+    const token = await chai.request(app)
+    .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
+    chaiHttpResponse = await chai.request(app).post('/matches').send({
+      "homeTeam": 16,
+      "awayTeam": 16,
+      "homeTeamGoals": 2,
+      "awayTeamGoals": 2,
+      "inProgress": true
+    }).set({ "authorization": token.body.token });
+
+    expect(chaiHttpResponse).to.have.status(401);
+    expect(chaiHttpResponse.body.message).to.be.eqls('It is not possible to create a match with two equal teams')
   })
 })

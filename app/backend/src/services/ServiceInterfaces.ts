@@ -46,5 +46,6 @@ export interface IMatchService {
   getInProgress(): Promise<IMatches[]>
   getFinished(): Promise<IMatches[]>
   create(payload: IMatchCreate): Promise<IMatches>
-  finish(id: string): Promise<string | undefined>
+  finish(id: string): Promise<string>
+  isSameTeam(team1: number, team2: number): Promise<void | undefined>
 }
