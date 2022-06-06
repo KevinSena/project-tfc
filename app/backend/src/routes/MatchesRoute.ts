@@ -8,6 +8,11 @@ MatchesRoute.get('/', (req, res, next) => matches.getAll(req, res, next))
     '/',
     (req, res, next) => login.isAdmin(req, res, next),
     (req, res, next) => matches.create(req, res, next),
+  )
+  .patch(
+    '/:id/finish',
+    (req, res, next) => login.isAdmin(req, res, next),
+    (req, res, next) => matches.finish(req, res, next),
   );
 
 export default MatchesRoute;

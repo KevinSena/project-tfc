@@ -36,4 +36,11 @@ export default class MatchService implements IMatchService {
     const data = await this.model.create(payload);
     return data;
   }
+
+  async finish(id: string): Promise<string | undefined> {
+    const match = await this.model.findByPk(id) as Matches;
+    match.inProgress = false;
+    await match.save();
+    return 'Finished';
+  }
 }

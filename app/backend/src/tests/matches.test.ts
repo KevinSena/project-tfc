@@ -11,8 +11,10 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Matches tests', () => {
+describe('Matches tests', async () => {
   let chaiHttpResponse: Response;
+  const token = await chai.request(app)
+    .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
 
   it('Devolve todas as partidas, sem filtros', async () => {
     chaiHttpResponse = await chai.request(app).get('/matches');
@@ -56,5 +58,20 @@ describe('Matches tests', () => {
     expect(chaiHttpResponse).to.have.status(201);
     expect(chaiHttpResponse.body).to.be.an('object');
     expect(chaiHttpResponse.body).to.have.all.keys(['id', 'homeTeam', 'homeTeamGoals', 'awayTeam', 'awayTeamGoals', 'inProgress']);
+  })
+
+  it('Finaliza partida em andamento', async () => {
+    const inProgress = await chai.request(app).post('/matches').send({
+      "homeTeam": 16,
+      "awayTeam": 8,
+      "homeTeamGoals": 2,
+      "awayTeamGoals": 2,
+      "inProgress": true
+    }).set({ "authorization": token.body.token });
+
+    chaiHttpResponse = await chai.request(app).patch(`/matches/${inProgress.body.id}/finish`).set({ "authorization": token.body.token });
+
+    expect(chaiHttpResponse).to.have.status(200);
+    expect(chaiHttpResponse.body.message).to.be.eqls('Finished')
   })
 })

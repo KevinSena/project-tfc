@@ -46,4 +46,5 @@ export interface IMatchService {
   getInProgress(): Promise<IMatches[]>
   getFinished(): Promise<IMatches[]>
   create(payload: IMatchCreate): Promise<IMatches>
+  finish(id: string): Promise<string | undefined>
 }

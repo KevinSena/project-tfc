@@ -33,4 +33,14 @@ export default class MatchController implements IMatchController {
       next(error);
     }
   }
+
+  async finish(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const message = await this.service.finish(id);
+      res.status(200).json({ message });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
