@@ -62,4 +62,12 @@ export default class MatchService implements IMatchService {
 
     if (!first || !second) throw new ResError('There is no team with such id!', 404);
   }
+
+  async update(id: string, home: number, away: number): Promise<IMatches> {
+    const match = await this.model.findByPk(id) as Matches;
+    match.homeTeamGoals = home;
+    match.awayTeamGoals = away;
+    await match.save();
+    return match;
+  }
 }

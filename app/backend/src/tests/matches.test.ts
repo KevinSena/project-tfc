@@ -106,4 +106,24 @@ describe('Matches tests', () => {
     expect(chaiHttpResponse).to.have.status(404);
     expect(chaiHttpResponse.body.message).to.be.eqls('There is no team with such id!')
   })
+
+  it('Finaliza partida em andamento', async () => {
+    const token = await chai.request(app)
+    .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
+    const inProgress = await chai.request(app).post('/matches').send({
+      "homeTeam": 3,
+      "awayTeam": 2,
+      "homeTeamGoals": 1,
+      "awayTeamGoals": 1,
+      "inProgress": true
+    }).set({ "authorization": token.body.token });
+
+    chaiHttpResponse = await chai.request(app).patch(`/matches/${inProgress.body.id}`)
+      .send({ "homeTeamGoals": 2, "awayTeamGoals": 3, })
+      .set({ "authorization": token.body.token });
+
+    expect(chaiHttpResponse).to.have.status(200);
+    expect(chaiHttpResponse.body.homeTeamGoals).to.be.eqls(2)
+    expect(chaiHttpResponse.body.awayTeamGoals).to.be.eqls(3)
+  })
 })
