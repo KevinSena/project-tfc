@@ -35,6 +35,7 @@ export default class MatchService implements IMatchService {
   async create(payload: IMatchCreate)
     : Promise<IMatches> {
     await this.isSameTeam(payload.homeTeam as number, payload.awayTeam as number);
+    await this.teamsExist(payload.homeTeam as number, payload.awayTeam as number);
     const data = await this.model.create(payload);
     return data;
   }
@@ -53,5 +54,12 @@ export default class MatchService implements IMatchService {
     if (first?.id === second?.id) {
       throw new ResError('It is not possible to create a match with two equal teams', 401);
     }
+  }
+
+  async teamsExist(team1: number, team2: number): Promise<void | undefined> {
+    const first = await this.model.findByPk(team1);
+    const second = await this.model.findByPk(team2);
+
+    if (!first || !second) throw new ResError('There is no team with such id!', 404);
   }
 }

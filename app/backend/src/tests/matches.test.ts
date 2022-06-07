@@ -79,7 +79,7 @@ describe('Matches tests', () => {
 
   it('Não é possível dois times iguais na mesma partida', async () => {
     const token = await chai.request(app)
-    .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
+      .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
     chaiHttpResponse = await chai.request(app).post('/matches').send({
       "homeTeam": 16,
       "awayTeam": 16,
@@ -90,5 +90,20 @@ describe('Matches tests', () => {
 
     expect(chaiHttpResponse).to.have.status(401);
     expect(chaiHttpResponse.body.message).to.be.eqls('It is not possible to create a match with two equal teams')
+  })
+
+  it('Não é possível cadastrar time não existente', async () => {
+    const token = await chai.request(app)
+      .post('/login').send({email: 'admin@admin.com', password: 'secret_admin'});
+    chaiHttpResponse = await chai.request(app).post('/matches').send({
+      "homeTeam": 100,
+      "awayTeam": 16,
+      "homeTeamGoals": 2,
+      "awayTeamGoals": 2,
+      "inProgress": true
+    }).set({ "authorization": token.body.token });
+
+    expect(chaiHttpResponse).to.have.status(404);
+    expect(chaiHttpResponse.body.message).to.be.eqls('There is no team with such id!')
   })
 })
