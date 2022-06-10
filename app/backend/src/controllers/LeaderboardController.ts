@@ -21,4 +21,13 @@ export default class LeaderboardController implements ILeaderboardController {
       next(error);
     }
   }
+
+  async leaderGeneral(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await this.service.leaderGeneral();
+      res.status(200).json(data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

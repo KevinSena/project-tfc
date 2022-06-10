@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import Teams from '../database/models/TeamModel';
 import Matches from '../database/models/MatchModel';
 import { ILeaderboard, ILeaderboardService } from './ServiceInterfaces';
@@ -110,6 +111,30 @@ export default class LeaderboardService implements ILeaderboardService {
     return teamPoints;
   }
 
+  private async boardGeneral(teamId: number): Promise<ILeaderboard> {
+    const team = await this.teams.findByPk(teamId);
+    const awayMatches = await this.matches.findAll({ where: {
+      [Op.or]: [{ awayTeam: teamId }, { homeTeam: teamId }], inProgress: false,
+    } });
+    const teamPoints = awayMatches.reduce((prev, curr) => {
+      const isHome = curr.homeTeam === teamId;
+      const result = isHome ? LeaderboardService.sumPoints(prev, curr)
+        : LeaderboardService.sumPointsAway(prev, curr);
+
+      result.name = team?.teamName || '';
+      result.totalGames += 1;
+      result.goalsFavor += isHome ? curr.homeTeamGoals : curr.awayTeamGoals;
+      result.goalsOwn += isHome ? curr.awayTeamGoals : curr.homeTeamGoals;
+      result.goalsBalance += isHome ? curr.homeTeamGoals - curr.awayTeamGoals
+        : curr.awayTeamGoals - curr.homeTeamGoals;
+      result.efficiency = +((result.totalPoints / (result.totalGames * 3)) * 100).toFixed(2);
+
+      return result;
+    }, { ...this.initialBoard });
+
+    return teamPoints;
+  }
+
   async leaderHome(): Promise<ILeaderboard[]> {
     const teams = await this.teams.findAll();
 
@@ -126,6 +151,17 @@ export default class LeaderboardService implements ILeaderboardService {
 
     const result = await Promise.all(teams.map(async (e) => {
       const rt = await this.boardAway(e.id);
+      return rt;
+    }));
+
+    return result.sort(LeaderboardService.comparePoints);
+  }
+
+  async leaderGeneral(): Promise<ILeaderboard[]> {
+    const teams = await this.teams.findAll();
+
+    const result = await Promise.all(teams.map(async (e) => {
+      const rt = await this.boardGeneral(e.id);
       return rt;
     }));
 

@@ -28,4 +28,12 @@ describe('Leaderboard tests', () => {
     expect(chaiHttpResponse.body[0].name).to.be.eqls('Palmeiras')
     expect(chaiHttpResponse.body[0].totalPoints).to.be.eqls(6)
   })
+
+  it('Devolve a classificação geral', async () => {
+    chaiHttpResponse = await chai.request(app).get('/leaderboard');
+
+    expect(chaiHttpResponse).to.have.status(200);
+    expect(chaiHttpResponse.body[0].name).to.be.eqls('Palmeiras')
+    expect(chaiHttpResponse.body[0].totalPoints).to.be.eqls(13)
+  })
 })

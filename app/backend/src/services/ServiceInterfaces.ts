@@ -68,4 +68,5 @@ export interface ILeaderboard {
 export interface ILeaderboardService {
   leaderHome(): Promise<ILeaderboard[]>
   leaderAway(): Promise<ILeaderboard[]>
+  leaderGeneral(): Promise<ILeaderboard[]>
 }
