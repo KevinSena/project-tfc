@@ -33,6 +33,20 @@ export default class LeaderboardService implements ILeaderboardService {
     return result;
   }
 
+  private static sumPointsAway(obj: ILeaderboard, curr: Matches): ILeaderboard {
+    const result = obj;
+    if (curr.homeTeamGoals < curr.awayTeamGoals) {
+      result.totalPoints += 3;
+      result.totalVictories += 1;
+    }
+    if (curr.homeTeamGoals === curr.awayTeamGoals) {
+      result.totalDraws += 1;
+      result.totalPoints += 1;
+    }
+    if (curr.homeTeamGoals > curr.awayTeamGoals) result.totalLosses += 1;
+    return result;
+  }
+
   private static compareBalance(a:ILeaderboard, b: ILeaderboard): number | void {
     if (a.goalsBalance > b.goalsBalance) return 1;
     if (a.goalsBalance === b.goalsBalance) {
@@ -57,7 +71,6 @@ export default class LeaderboardService implements ILeaderboardService {
     const homeMatches = await this.matches.findAll({ where: {
       homeTeam: teamId, inProgress: false,
     } });
-    if (teamId === 4) console.log(homeMatches);
     const teamPoints = homeMatches.reduce((prev, curr) => {
       const initial = prev;
       const result = LeaderboardService.sumPoints(initial, curr);
@@ -75,11 +88,44 @@ export default class LeaderboardService implements ILeaderboardService {
     return teamPoints;
   }
 
+  private async boardAway(teamId: number): Promise<ILeaderboard> {
+    const team = await this.teams.findByPk(teamId);
+    const awayMatches = await this.matches.findAll({ where: {
+      awayTeam: teamId, inProgress: false,
+    } });
+    const teamPoints = awayMatches.reduce((prev, curr) => {
+      const initial = prev;
+      const result = LeaderboardService.sumPointsAway(initial, curr);
+
+      result.name = team?.teamName || '';
+      result.totalGames += 1;
+      result.goalsFavor += curr.awayTeamGoals;
+      result.goalsOwn += curr.homeTeamGoals;
+      result.goalsBalance += curr.awayTeamGoals - curr.homeTeamGoals;
+      result.efficiency = +((result.totalPoints / (result.totalGames * 3)) * 100).toFixed(2);
+
+      return result;
+    }, { ...this.initialBoard });
+
+    return teamPoints;
+  }
+
   async leaderHome(): Promise<ILeaderboard[]> {
     const teams = await this.teams.findAll();
 
     const result = await Promise.all(teams.map(async (e) => {
       const rt = await this.boardHome(e.id);
+      return rt;
+    }));
+
+    return result.sort(LeaderboardService.comparePoints);
+  }
+
+  async leaderAway(): Promise<ILeaderboard[]> {
+    const teams = await this.teams.findAll();
+
+    const result = await Promise.all(teams.map(async (e) => {
+      const rt = await this.boardAway(e.id);
       return rt;
     }));
 

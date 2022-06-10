@@ -20,4 +20,6 @@ export interface IMatchController{
 
 export interface ILeaderboardController{
   leaderHome(req: Request, res: Response, next: NextFunction): Promise<void>
+  leaderAway(req: Request, res: Response, next: NextFunction): Promise<void>
+  // leaderHome(req: Request, res: Response, next: NextFunction): Promise<void>
 }
