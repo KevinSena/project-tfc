@@ -20,13 +20,15 @@ export default class LeaderboardService implements ILeaderboardService {
   }
 
   private static sumPoints(obj: ILeaderboard, curr: Matches): ILeaderboard {
-    console.log(obj);
     const result = obj;
     if (curr.homeTeamGoals > curr.awayTeamGoals) {
       result.totalPoints += 3;
       result.totalVictories += 1;
     }
-    if (curr.homeTeamGoals === curr.awayTeamGoals) result.totalDraws += 1;
+    if (curr.homeTeamGoals === curr.awayTeamGoals) {
+      result.totalDraws += 1;
+      result.totalPoints += 1;
+    }
     if (curr.homeTeamGoals < curr.awayTeamGoals) result.totalLosses += 1;
     return result;
   }
@@ -52,8 +54,10 @@ export default class LeaderboardService implements ILeaderboardService {
 
   private async boardHome(teamId: number): Promise<ILeaderboard> {
     const team = await this.teams.findByPk(teamId);
-    const homeMatches = await this.matches.findAll({ where: { homeTeam: teamId } });
-
+    const homeMatches = await this.matches.findAll({ where: {
+      homeTeam: teamId, inProgress: false,
+    } });
+    if (teamId === 4) console.log(homeMatches);
     const teamPoints = homeMatches.reduce((prev, curr) => {
       const initial = prev;
       const result = LeaderboardService.sumPoints(initial, curr);
@@ -63,7 +67,7 @@ export default class LeaderboardService implements ILeaderboardService {
       result.goalsFavor += curr.homeTeamGoals;
       result.goalsOwn += curr.awayTeamGoals;
       result.goalsBalance += curr.homeTeamGoals - curr.awayTeamGoals;
-      result.efficiency = (result.totalPoints / (result.totalGames * 3)) * 100;
+      result.efficiency = +((result.totalPoints / (result.totalGames * 3)) * 100).toFixed(2);
 
       return result;
     }, { ...this.initialBoard });
