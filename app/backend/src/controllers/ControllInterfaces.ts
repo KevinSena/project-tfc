@@ -17,3 +17,7 @@ export interface IMatchController{
   finish(req: Request, res: Response, next: NextFunction): Promise<void>
   update(req: Request, res: Response, next: NextFunction): Promise<void>
 }
+
+export interface ILeaderboardController{
+  leaderHome(req: Request, res: Response, next: NextFunction): Promise<void>
+}

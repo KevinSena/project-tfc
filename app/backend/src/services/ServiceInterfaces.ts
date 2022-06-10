@@ -51,3 +51,20 @@ export interface IMatchService {
   isSameTeam(team1: number, team2: number): Promise<void | undefined>
   teamsExist(team1: number, team2: number): Promise<void | undefined>
 }
+
+export interface ILeaderboard {
+  name: string,
+  totalPoints: number,
+  totalGames: number,
+  totalVictories: number,
+  totalDraws: number,
+  totalLosses: number,
+  goalsFavor: number,
+  goalsOwn: number,
+  goalsBalance: number,
+  efficiency: number
+}
+
+export interface ILeaderboardService {
+  leaderHome(): Promise<ILeaderboard[]>
+}
