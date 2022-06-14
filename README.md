@@ -1,4 +1,4 @@
-# My Awesome Project
+# Projeto Trybe Futebol Clube
 
 # Contexto
 Este projeto trata-se de um site informativo sobre partidas e classificações de futebol desenvolvido enquanto estudava na [Trybe](https://www.betrybe.com/).
