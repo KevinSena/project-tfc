@@ -3,7 +3,9 @@
 # Contexto
 Este projeto trata-se de um site informativo sobre partidas e classificações de futebol desenvolvido enquanto estudava na [Trybe](https://www.betrybe.com/).
 <br>
-O desafio inerente ao projeto era contruir um novo backend para um front já pronto, fazendo a integração da aplicação, além dos testes de integração.
+O desafio inerente ao projeto era construir um novo backend para um front já pronto, fazendo a integração da aplicação, além dos testes de integração no backend.
+<br>
+Certamente foi um projeto especial para mim, por ter a oportunidade de usar TypesCript, Programação orientada a objetos e SOLID.
 ![](/assets/partidas_tfc.png)
 
 ## Técnologias usadas
